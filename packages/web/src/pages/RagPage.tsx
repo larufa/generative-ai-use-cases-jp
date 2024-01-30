@@ -19,6 +19,7 @@ type StateType = {
   content: string;
   setContent: (c: string) => void;
   image: File | null;
+  setImage: (c: File | null) => void;
 };
 
 const useRagPageState = create<StateType>((set) => {
@@ -66,20 +67,20 @@ const RagPage: React.FC = () => {
   const onSend = useCallback(() => {
     if (image) {
       setImage(null);
-      detectedText = postImage(image);
+    //   detectedText = postImage(image);
     }
     // TODO: pass detectedText
     if (content.length != 0) {
       postMessage(content, textModels.find((m) => m.modelId === modelId)!);
       setContent('');
     }
-  }, [textModels, modelId, content, postMessage, setContent, image]);
+  }, [textModels, modelId, content, postMessage, setContent, image, setImage]);
 
   const onReset = useCallback(() => {
     clear();
     setContent('');
     setImage(null);
-  }, [clear, setContent]);
+  }, [clear, setContent, setImage]);
 
   useEffect(() => {
     if (messages.length > 0) {

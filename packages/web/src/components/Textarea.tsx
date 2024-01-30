@@ -15,7 +15,7 @@ type Props = RowItemProps & {
   maxHeight?: number;
   onEnter?: () => void;
   onChange: (value: string) => void;
-  onImageChange: (value: File | null) => void;
+  onImageChange?: (value: File | null) => void;
 };
 
 const MAX_HEIGHT = 300;
@@ -96,11 +96,13 @@ const Textarea: React.FC<Props> = (props) => {
       />
       {props.imageInput && (
         <input
-          className="absolute top-3 right-0 text-sm"
+          className="absolute top-3.5 right-12 text-sm"
           type="file"
           accept="image/png, image/gif, image/jpeg"
           onChange={(e) => {
-            props.onImageChange(e.target.files && e.target.files[0])
+            if (props.onImageChange) {
+              props.onImageChange(e.target.files && e.target.files[0]);
+            }
           }}
         />
       )}

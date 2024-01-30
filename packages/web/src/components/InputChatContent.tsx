@@ -15,7 +15,7 @@ type Props = {
   resetDisabled?: boolean;
   loading?: boolean;
   onChangeContent: (content: string) => void;
-  onChangeImage: (img: File | null) => void;
+  onChangeImage?: (img: File | null) => void;
   onSend: () => void;
   sendIcon?: React.ReactNode;
   // ページ下部以外で使う時に margin bottom を無効化するためのオプション

@@ -202,8 +202,9 @@ export class Rag extends Construct {
       entry: './lambda/rekognition.ts',
       timeout: Duration.minutes(15),
     });
-    rekognitionFunction.role?.addToRolePolicy(
+    rekognitionFunction.addToRolePolicy(
       new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
         actions: ['rekognition:DetectText'],
         resources: ['*'],
       })
