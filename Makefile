@@ -11,7 +11,7 @@ init:
 	npx -w $(WORKSPACE) cdk bootstrap --profile $(AWS_PROFILE)
 
 list:
-	npx -w $(WORKSPACE) cdk list --profile $(AWS_PROFILE) 
+	npx -w $(WORKSPACE) cdk list --profile $(AWS_PROFILE)
 
 deploy:
 	npx -w $(WORKSPACE) cdk deploy --profile $(AWS_PROFILE) $(STACK)

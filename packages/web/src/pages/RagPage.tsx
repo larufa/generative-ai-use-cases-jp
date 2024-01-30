@@ -18,12 +18,14 @@ type StateType = {
   setModelId: (c: string) => void;
   content: string;
   setContent: (c: string) => void;
+  image: File | null;
 };
 
 const useRagPageState = create<StateType>((set) => {
   return {
     modelId: '',
     content: '',
+    image: null,
     setModelId: (s: string) => {
       set(() => ({
         modelId: s,
@@ -34,11 +36,16 @@ const useRagPageState = create<StateType>((set) => {
         content: s,
       }));
     },
+    setImage: (s: File | null) => {
+      set(() => ({
+        image: s,
+      }));
+    }
   };
 });
 
 const RagPage: React.FC = () => {
-  const { modelId, setModelId, content, setContent } = useRagPageState();
+  const { modelId, setModelId, content, setContent, image, setImage } = useRagPageState();
   const { state, pathname } = useLocation() as Location<RagPageLocationState>;
   const { postMessage, clear, loading, messages, isEmpty } = useRag(pathname);
   const { scrollToBottom, scrollToTop } = useScroll();
@@ -57,13 +64,21 @@ const RagPage: React.FC = () => {
   }, [modelId, availableModels, setModelId]);
 
   const onSend = useCallback(() => {
-    postMessage(content, textModels.find((m) => m.modelId === modelId)!);
-    setContent('');
-  }, [textModels, modelId, content, postMessage, setContent]);
+    if (image) {
+      setImage(null);
+      detectedText = postImage(image);
+    }
+    // TODO: pass detectedText
+    if (content.length != 0) {
+      postMessage(content, textModels.find((m) => m.modelId === modelId)!);
+      setContent('');
+    }
+  }, [textModels, modelId, content, postMessage, setContent, image]);
 
   const onReset = useCallback(() => {
     clear();
     setContent('');
+    setImage(null);
   }, [clear, setContent]);
 
   useEffect(() => {
@@ -144,8 +159,10 @@ const RagPage: React.FC = () => {
         <div className="fixed bottom-0 z-0 flex w-full items-end justify-center lg:pr-64 print:hidden">
           <InputChatContent
             content={content}
+            image={image}
             disabled={loading}
             onChangeContent={setContent}
+            onChangeImage={setImage}
             onSend={() => {
               onSend();
             }}

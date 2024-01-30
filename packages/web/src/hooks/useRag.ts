@@ -85,6 +85,10 @@ const useRag = (id: string) => {
         }
       );
     },
+    postImage: async (content: File) => {
+      const query = await rekognition({});
+      return "";
+    },
   };
 };
 
