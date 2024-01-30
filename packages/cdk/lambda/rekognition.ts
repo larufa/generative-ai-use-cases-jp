@@ -7,16 +7,15 @@ export const handler = async (
   try {
     const rekognitionClient = new RekognitionClient({});
 
-    const base64EncodedImage = event.body;
-    const imageBytes = Buffer.from(base64EncodedImage, 'base64');
-
+    console.log(event);
+    const body = JSON.parse(event.body)
+    const imageBytes = Buffer.from(body.image, 'base64');
     const rekognitionParams = {
       Image: {
         Bytes: imageBytes,
       },
     };
     const textDetectionResult = await rekognitionClient.send(new DetectTextCommand(rekognitionParams));
-
     const detectedText = textDetectionResult.TextDetections?.map((detection) => detection.DetectedText) || [];
     return {
       statusCode: 200,

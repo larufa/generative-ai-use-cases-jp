@@ -313,6 +313,10 @@ export class Api extends Construct {
         allowMethods: Cors.ALL_METHODS,
       },
       cloudWatchRole: true,
+      binaryMediaTypes: [
+        'image/*',
+        'application/octet-stream',
+      ]
     });
 
     api.addGatewayResponse('Api4XX', {
