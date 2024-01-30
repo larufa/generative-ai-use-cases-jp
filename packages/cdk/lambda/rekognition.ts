@@ -1,16 +1,6 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { RekognitionClient, DetectTextCommand } from '@aws-sdk/client-rekognition';
 
-function parseS3Url(s3Url: string) {
-  const url = new URL(s3Url);
-
-  const pathParts = url.pathname.split('/');
-  const bucket = pathParts[1];
-  const key = pathParts.slice(2).join('/');
-
-  return { bucket, key };
-}
-
 export const handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
