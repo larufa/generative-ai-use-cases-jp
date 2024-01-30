@@ -2,13 +2,15 @@
 
 set -eu
 
+PROFILE=gen-ai
+
 STACK_NAME='GenerativeAiUseCasesStack'
 
 function stack_output {
     aws cloudformation describe-stacks \
         --stack-name $STACK_NAME \
         --query "Stacks[0].Outputs[?OutputKey=='$1'].OutputValue" \
-        --output text
+        --output text --profile $PROFILE
 }
 
 echo 'Setup environment variables...'
