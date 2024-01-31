@@ -18,12 +18,15 @@ type StateType = {
   setModelId: (c: string) => void;
   content: string;
   setContent: (c: string) => void;
+  image: File | null;
+  setImage: (c: File | null) => void;
 };
 
 const useRagPageState = create<StateType>((set) => {
   return {
     modelId: '',
     content: '',
+    image: null,
     setModelId: (s: string) => {
       set(() => ({
         modelId: s,
@@ -34,13 +37,18 @@ const useRagPageState = create<StateType>((set) => {
         content: s,
       }));
     },
+    setImage: (s: File | null) => {
+      set(() => ({
+        image: s,
+      }));
+    }
   };
 });
 
 const RagPage: React.FC = () => {
-  const { modelId, setModelId, content, setContent } = useRagPageState();
+  const { modelId, setModelId, content, setContent, image, setImage } = useRagPageState();
   const { state, pathname } = useLocation() as Location<RagPageLocationState>;
-  const { postMessage, clear, loading, messages, isEmpty } = useRag(pathname);
+  const { postMessage, clear, loading, messages, isEmpty, detectTextFromImage } = useRag(pathname);
   const { scrollToBottom, scrollToTop } = useScroll();
   const { modelIds: availableModels, textModels } = MODELS;
 
@@ -57,14 +65,30 @@ const RagPage: React.FC = () => {
   }, [modelId, availableModels, setModelId]);
 
   const onSend = useCallback(() => {
-    postMessage(content, textModels.find((m) => m.modelId === modelId)!);
-    setContent('');
-  }, [textModels, modelId, content, postMessage, setContent]);
+    let detectedText: any;
+    if (image) {
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        const binaryString = event.target?.result as ArrayBuffer;
+        const dataArray = Array.from(new Uint8Array(binaryString));
+        const base64String = btoa(String.fromCharCode.apply(null, dataArray));
+        detectedText = await detectTextFromImage(base64String);
+        await postMessage(content, textModels.find((m) => m.modelId === modelId)!, JSON.stringify(detectedText));
+        setContent('');
+        setImage(null);
+      };
+      reader.readAsArrayBuffer(image);
+    } else {
+        postMessage(content, textModels.find((m) => m.modelId === modelId)!);
+        setContent('');
+    }
+  }, [textModels, modelId, content, postMessage, setContent, image, setImage]);
 
   const onReset = useCallback(() => {
     clear();
     setContent('');
-  }, [clear, setContent]);
+    setImage(null);
+  }, [clear, setContent, setImage]);
 
   useEffect(() => {
     if (messages.length > 0) {
@@ -146,6 +170,7 @@ const RagPage: React.FC = () => {
             content={content}
             disabled={loading}
             onChangeContent={setContent}
+            onChangeImage={setImage}
             onSend={() => {
               onSend();
             }}

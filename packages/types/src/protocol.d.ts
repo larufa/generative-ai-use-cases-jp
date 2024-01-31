@@ -136,3 +136,10 @@ export type GetSharedChatResponse = {
   chat: Chat;
   messages: RecordedMessage[];
 };
+
+export type RekognitionRequest = {
+  image: ArrayBuffer;
+};
+export type RekognitionResponse = {
+  detectedText: string[];
+};

@@ -18,7 +18,7 @@ const useRag = (id: string) => {
     isEmpty,
   } = useChat(id);
 
-  const { retrieve } = useRagApi();
+  const { retrieve, rekognition } = useRagApi();
   const { predict } = useChatApi();
 
   return {
@@ -26,7 +26,7 @@ const useRag = (id: string) => {
     clear,
     loading,
     messages,
-    postMessage: async (content: string, model: Model) => {
+    postMessage: async (content: string, model: Model, detectedText?: string) => {
       // Kendra から Retrieve する際に、ローディング表示する
       setLoading(true);
       pushMessage('user', content);
@@ -51,6 +51,7 @@ const useRag = (id: string) => {
         ragPrompt.generatePrompt({
           promptType: 'SYSTEM_CONTEXT',
           referenceItems: items.data.ResultItems ?? [],
+          detectedText: detectedText,
         })
       );
 
@@ -84,6 +85,10 @@ const useRag = (id: string) => {
           return message + '\n' + footnote;
         }
       );
+    },
+    detectTextFromImage: async (base64String: string) => {
+      setLoading(true);
+      return await rekognition(base64String);
     },
   };
 };

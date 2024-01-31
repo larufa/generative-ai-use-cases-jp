@@ -14,6 +14,7 @@ type Props = {
   resetDisabled?: boolean;
   loading?: boolean;
   onChangeContent: (content: string) => void;
+  onChangeImage?: (img: File | null) => void;
   onSend: () => void;
   sendIcon?: React.ReactNode;
   // ページ下部以外で使う時に margin bottom を無効化するためのオプション
@@ -47,7 +48,7 @@ const InputChatContent: React.FC<Props> = (props) => {
       }`}>
       <div
         className={`relative flex items-end rounded-xl border border-black/10 bg-gray-100 shadow-[0_0_30px_1px] shadow-gray-400/40 ${
-          props.disableMarginBottom ? '' : 'mb-7'
+          props.disableMarginBottom ? '' : 'mb-10'
         }`}>
         <Textarea
           className="scrollbar-thumb-gray-200 scrollbar-thin m-2 -mr-14 bg-transparent pr-14 "
@@ -57,6 +58,8 @@ const InputChatContent: React.FC<Props> = (props) => {
           value={props.content}
           onChange={props.onChangeContent}
           onEnter={disabledSend ? undefined : props.onSend}
+          imageInput
+          onImageChange={props.onChangeImage}
         />
         <ButtonSend
           className="m-2 align-bottom"

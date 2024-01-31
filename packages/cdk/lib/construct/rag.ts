@@ -197,6 +197,19 @@ export class Rag extends Construct {
       })
     );
 
+    const rekognitionFunction = new NodejsFunction(this, 'Rekognition', {
+      runtime: Runtime.NODEJS_18_X,
+      entry: './lambda/rekognition.ts',
+      timeout: Duration.minutes(15),
+    });
+    rekognitionFunction.addToRolePolicy(
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['rekognition:DetectText'],
+        resources: ['*'],
+      })
+    );
+
     // S3 データソース関連
     const getDocDownloadSignedUrlFunction = new NodejsFunction(
       this,
@@ -235,6 +248,14 @@ export class Rag extends Construct {
     retrieveResource.addMethod(
       'POST',
       new LambdaIntegration(retrieveFunction),
+      commonAuthorizerProps
+    );
+
+    const rekognitionResource = ragResource.addResource('rekognition');
+    // POST: /rag/rekognition
+    rekognitionResource.addMethod(
+      'POST',
+      new LambdaIntegration(rekognitionFunction),
       commonAuthorizerProps
     );
 

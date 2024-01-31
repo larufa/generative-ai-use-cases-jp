@@ -4,16 +4,19 @@ import Help from './Help';
 
 type Props = RowItemProps & {
   value?: string;
+  image?: File | null
   label?: string;
   placeholder?: string;
   hint?: string;
   help?: string;
+  imageInput?: boolean;
   optional?: boolean;
   noBorder?: boolean;
   rows?: number;
   maxHeight?: number;
   onEnter?: () => void;
   onChange: (value: string) => void;
+  onImageChange?: (value: File | null) => void;
 };
 
 const MAX_HEIGHT = 300;
@@ -92,6 +95,18 @@ const Textarea: React.FC<Props> = (props) => {
           props.onChange(e.target.value);
         }}
       />
+      {props.imageInput && (
+        <input
+          className="absolute -bottom-8 -right-0 mr-2 text-sm"
+          type="file"
+          accept="image/png, image/gif, image/jpeg"
+          onChange={(e) => {
+            if (props.onImageChange) {
+              props.onImageChange(e.target.files && e.target.files[0]);
+            }
+          }}
+        />
+      )}
       {props.hint && (
         <div className="-mt-0.5 text-xs text-gray-400">{props.hint}</div>
       )}

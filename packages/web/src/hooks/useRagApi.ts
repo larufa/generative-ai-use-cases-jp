@@ -5,6 +5,8 @@ import {
   QueryKendraResponse,
   RetrieveKendraRequest,
   RetrieveKendraResponse,
+  RekognitionRequest,
+  RekognitionResponse,
 } from 'generative-ai-use-cases-jp';
 import useHttp from './useHttp';
 
@@ -36,6 +38,11 @@ const useRagApi = () => {
         }
       );
       return url;
+    },
+    rekognition: (image: string) => {
+      return http.api.post<RekognitionResponse, RekognitionRequest>('/rag/rekognition', {
+        image,
+      });
     },
   };
 };
