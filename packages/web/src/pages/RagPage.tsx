@@ -48,7 +48,7 @@ const useRagPageState = create<StateType>((set) => {
 const RagPage: React.FC = () => {
   const { modelId, setModelId, content, setContent, image, setImage } = useRagPageState();
   const { state, pathname } = useLocation() as Location<RagPageLocationState>;
-  const { postMessage, clear, loading, messages, isEmpty } = useRag(pathname);
+  const { postMessage, clear, loading, messages, isEmpty, detectTextFromImage } = useRag(pathname);
   const { scrollToBottom, scrollToTop } = useScroll();
   const { modelIds: availableModels, textModels } = MODELS;
 
@@ -65,14 +65,22 @@ const RagPage: React.FC = () => {
   }, [modelId, availableModels, setModelId]);
 
   const onSend = useCallback(() => {
+    let detectedText: any;
     if (image) {
-      setImage(null);
-    //   detectedText = postImage(image);
-    }
-    // TODO: pass detectedText
-    if (content.length != 0) {
-      postMessage(content, textModels.find((m) => m.modelId === modelId)!);
-      setContent('');
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        const binaryString = event.target?.result as ArrayBuffer;
+        const dataArray = Array.from(new Uint8Array(binaryString));
+        const base64String = btoa(String.fromCharCode.apply(null, dataArray));
+        detectedText = await detectTextFromImage(base64String);
+        await postMessage(content, textModels.find((m) => m.modelId === modelId)!, JSON.stringify(detectedText));
+        setContent('');
+        setImage(null);
+      };
+      reader.readAsArrayBuffer(image);
+    } else {
+        postMessage(content, textModels.find((m) => m.modelId === modelId)!);
+        setContent('');
     }
   }, [textModels, modelId, content, postMessage, setContent, image, setImage]);
 
@@ -160,7 +168,6 @@ const RagPage: React.FC = () => {
         <div className="fixed bottom-0 z-0 flex w-full items-end justify-center lg:pr-64 print:hidden">
           <InputChatContent
             content={content}
-            image={image}
             disabled={loading}
             onChangeContent={setContent}
             onChangeImage={setImage}

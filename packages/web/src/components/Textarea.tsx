@@ -4,6 +4,7 @@ import Help from './Help';
 
 type Props = RowItemProps & {
   value?: string;
+  image?: File | null
   label?: string;
   placeholder?: string;
   hint?: string;
@@ -96,7 +97,7 @@ const Textarea: React.FC<Props> = (props) => {
       />
       {props.imageInput && (
         <input
-          className="absolute top-3.5 right-12 text-sm"
+          className="absolute -bottom-8 -right-0 mr-2 text-sm"
           type="file"
           accept="image/png, image/gif, image/jpeg"
           onChange={(e) => {
